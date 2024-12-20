@@ -1,0 +1,139 @@
+```set template default.html```
+```set title pxtonegm cheat sheet```
+```set autoapi ext```
+```set intro
+This is a "cheat sheet" for "pxtonegm" extension by YellowAfterlife.
+The extension can be found on [itch.io](https://yellowafterlife.itch.io/gamemaker-pxtonegm).
+```
+```setmd ok
+Returns whether successful.
+```
+#[pxtone_last_error()->]() {
+	Returns the error text for the last failed function call.
+}
+#[Init, cleanup, settings](init) {
+	#[pxtone_is_available()->]() {
+		Returns whether the DLL (and `pxtone.dll`) is loaded as such.
+	}
+	#[pxtone_init(channel_num, samples_per_sec, bits_per_sample, buffer_length_sec, directSound = false)->]() {
+		Initializes pxtone, has to be called before doing anything else.
+		
+		`channel_num` can be 1 for mono or 2 for stereo
+		
+		`samples_per_sec` is usually 11025 / 22050 / 44100
+		
+		`bits_per_sample` can be 8 or 16
+		
+		`buffer_length_sec` seems to be how far ahead the buffer will go. Documentation suggests to use `0.1`
+		
+		`directSound` indicates whether to use DirectSound (true) or WAVEMAPPER (false).\
+		According to author of the old extension, DirectSound option didn't work in old GM versions.
+		
+		%[ok]
+		
+		Usually called like this:
+		```
+		pxtone_init(2, 44100, 16, 0.1);
+		```
+	}
+	#[pxtone_reset(channel_num, samples_per_sec, bits_per_sample, buffer_length_sec, directSound = false)->]() {
+		Resets pxtone to different settings. Same arguments as above.
+	}
+	The following seem to poll information set above:
+	#[pxtone_get_channels()->]() {}
+	#[pxtone_get_sps()->]() {}
+	#[pxtone_get_bps()->]() {}
+	#[pxtone_get_spb()->]() {
+		It's "samples per buffer". Seems to be `buffer_length_sec * samples_per_sec`.
+	}
+	#[pxtone_get_quality()->]() {
+		Returns the above 4 in a container (`ds_list` for GM8.1, array for newer versions).
+	}
+	---
+	#[pxtone_release()]() {
+		De-initializes pxtone. Shouldn't have to explicitly call this under normal circumstances..?
+	}
+}
+#[Loading, unloading](load) {
+	#[pxtone_load(path)]() {
+		Loads a track from a file.
+		
+		In GM:S and newer, this can also load from the save directory when appropriate.
+	}
+	#[pxtone_load_ns(full_path)->bool]() {
+		Loads a track from an _absolute_ path.
+		
+		Bypasses sandbox rules in GM:S.
+	}
+	#[pxtone_load_buffer(buffer, ?length)->bool]() {
+		Loads a track from a buffer.
+		
+		If `length` is omitted, it's assumed to be `buffer_get_size(buffer)`.
+		
+		%[ok]
+	}
+	#[pxtone_tune_release()]() {
+		Unloads the track.
+		
+		Loading another one will also unload the previous track.
+	}
+}
+#[Playback](playback) {
+	#[pxtone_start(start_sample = 0, fadein_msec = 0)->bool]() {
+		Starts playback.
+	}
+	#[pxtone_stop()->]() {
+		Stops playback and returns the current sample that you can pass into [pxtone_start] to resume.
+	}
+	#[pxtone_isplaying()->]() {
+		Returns whether currently playing.
+	}
+	#[pxtone_fadeout(msec)->bool]() {
+		Fades out the tune over the next `msec`
+	}
+	#[pxtone_set_loop(loop)]() {
+		Changes whether to loop the track after the end or not.
+	}
+	#[pxtone_set_volume(volume)]() {
+		Changes volume (`0` .. `1` range).
+	}
+	#[pxtone_get_clock()]() {
+		Returns current playback time.
+		
+		Hard to tell what is this measured in.
+	}
+}
+#[Track info](info) {
+	#[pxtone_get_beat_number()]() {
+		
+	}
+	#[pxtone_get_beat_tempo()]() {
+		
+	}
+	#[pxtone_get_beat_clock()]() {
+		
+	}
+	#[pxtone_get_measure_number()]() {
+		
+	}
+	#[pxtone_tune_get_info()->]() {
+		Returns the above 4 together.
+	}
+	--- 
+	#[pxtone_get_repeat_measure()]() {
+		
+	}
+	#[pxtone_get_play_measure()]() {
+		
+	}
+	--
+	#[pxtone_get_name()->]() {
+		Returns track name, as set in the editor
+	}
+	#[pxtone_get_comment()->]() {
+		Returns track comment, as set in the editor
+	}
+}
+#[pxtone_tune_vomit(buf:buffer, sample_num:int)->bool]() {
+	Writes playback buffer to a GM buffer. Make sure it's big enough!
+}
