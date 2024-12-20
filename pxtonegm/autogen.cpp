@@ -5,7 +5,7 @@ gmk_buffer gmk_buffer_args;
 struct pxtone_quality {
 	long channel_num, samples_per_sec, bits_per_sample, sample_per_buf;
 };
-// from pxtonegm.cpp:105:
+// from pxtonegm.cpp:110:
 struct pxtone_tune_info {
 	long beat_num;
 	float beat_tempo;

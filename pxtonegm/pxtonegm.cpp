@@ -60,10 +60,15 @@ dllx double pxtone_release() {
 }
 
 extern HMODULE hmPxToneGM;
+inline void pxtone_before_load() {
+	if (pxtone_Tune_IsStreaming()) pxtone_Tune_Stop();
+}
 dllg bool pxtone_load_ns(const char* full_path) {
+	pxtone_before_load();
 	return pxtone_Tune_Load(hmPxToneGM, NULL, full_path);
 }
 dllg bool pxtone_load_buffer(gml_buffer buf, std::optional<int> length = {}) {
+	pxtone_before_load();
 	return pxtone_Tune_Read(buf.data(), length ? *length : buf.size());
 }
 

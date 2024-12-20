@@ -26,10 +26,18 @@
           <argument>
             <kind>1</kind>
             <string>pxtone_init(2, 44100, 16, 0.1);
-pxtone_load("opening.ptcop");
-pxtone_start(0, 0);
-playing = true;
-start_at = 0;
+file_list = ds_list_create();
+file_folder = ".";
+var name = file_find_first(file_folder + "/*.ptcop", 0);
+while (name != "") {
+    trace("+", name);
+    ds_list_add(file_list, name);
+    name = file_find_next();
+}
+file_find_close();
+file_index = 0;
+file_count = ds_list_size(file_list);
+
 </string>
           </argument>
         </arguments>
@@ -85,6 +93,22 @@ start_at = 0;
             <kind>1</kind>
             <string>draw_set_font(fnt_test);
 draw_set_color(c_white);
+var s = "Play a tune?";
+for (var i = 0; i &lt; file_count; i++) {
+    var file = file_list[|i];
+    s += "#[" + string(i + 1) + "] " + file;
+    if (keyboard_check_pressed(ord("1") + i)) {
+        if (pxtone_load(file_folder + "/" + file)) {
+            pxtone_start();
+        }
+    }
+}
+draw_text(5, 5, s);
+s = "Now playing:";
+s += "#Track: " + pxtone_get_name();
+s += "#Clock: " + string(pxtone_get_clock());
+s += "#Notes:#" + pxtone_get_comment();
+draw_text(405, 5, s);
 </string>
           </argument>
         </arguments>
