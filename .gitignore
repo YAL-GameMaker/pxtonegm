@@ -17,6 +17,7 @@ export/*.yymp
 export/*.yymps
 export/*.png
 export/*.zip
+!export/yalDissatisfied.png
 
 *.sdf
 help.rtf
